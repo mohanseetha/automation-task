@@ -2,7 +2,7 @@ name: Run Latecomers Report Daily
 
 on:
   schedule:
-    - cron: "46 6 * * *" 
+    - cron: "49 6 * * *" 
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
