@@ -2,7 +2,7 @@ name: Run Latecomers Report Daily
 
 on:
   schedule:
-    - cron: "49 6 * * *" 
+    - cron: "53 6 * * *" 
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
-        run: pip install pymongo pandas certifi
+        run: pip install pymongo pandas certifi openpyxl 
 
       - name: Run Python Script
         env:
