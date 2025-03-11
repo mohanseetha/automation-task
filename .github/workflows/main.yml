@@ -1,4 +1,4 @@
-name: Run Latecomers Report Every 5 Mins
+name: Run Latecomers Report
 
 on:
   schedule:
