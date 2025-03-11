@@ -1,9 +1,9 @@
-name: Run Latecomers Report Daily
+name: Run Latecomers Report Every 5 Mins
 
 on:
   schedule:
-    - cron: "53 6 * * *" 
-  workflow_dispatch:  # Allows manual trigger
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 jobs:
   run-script:
