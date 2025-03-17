@@ -29,4 +29,5 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
           DEPT_MAPPINGS: ${{ secrets.DEPT_MAPPINGS }}
+          ALL_MAIL: ${{ secrets.ALL_MAIL }}
         run: python script.py
