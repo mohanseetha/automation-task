@@ -13,8 +13,7 @@ SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT"))
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
 SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
-
-# Load department mappings from environment variable
+ALL_MAIL = os.getenv("ALL_MAIL")  # Email to send consolidated report
 dept_mappings = json.loads(os.getenv("DEPT_MAPPINGS"))
 
 # MongoDB Connection
@@ -32,15 +31,21 @@ df['date'] = pd.to_datetime(df['date'])
 today_date = datetime.today().strftime('%Y-%m-%d')
 df_today = df[df['date'].dt.strftime('%Y-%m-%d') == today_date]
 
-# Generate Excel files for each department
+# Generate separate Excel files for each department
 saved_files = {}
-for dept, email in dept_mappings.items():
-    df_dept = df_today[df_today['department'] == dept]
-    if not df_dept.empty:
-        filename = f"{dept}_late_comers_{today_date}.xlsx"
-        df_dept.to_excel(filename, index=False)
-        saved_files[dept] = filename
-        print(f"Saved: {filename}")
+with pd.ExcelWriter(f"Latecomers_{today_date}.xlsx", engine="xlsxwriter") as writer:
+    for dept, email in dept_mappings.items():
+        df_dept = df_today[df_today['department'] == dept]
+        if not df_dept.empty:
+            df_dept.to_excel(writer, sheet_name=dept, index=False)
+            saved_files[dept] = f"{dept}_late_comers_{today_date}.xlsx"
+            df_dept.to_excel(saved_files[dept], index=False)
+            print(f"Saved: {saved_files[dept]}")
+
+    # Save consolidated report
+    consolidated_filename = f"Latecomers_{today_date}.xlsx"
+    writer.close()
+    print(f"Consolidated report saved: {consolidated_filename}")
 
 # Email sending function
 def send_email(receiver_email, subject, body, attachment_path):
@@ -61,8 +66,12 @@ def send_email(receiver_email, subject, body, attachment_path):
         server.send_message(msg)
         print(f"Email sent to {receiver_email} with {attachment_path}")
 
-# Send emails
+# Send individual department emails
 for dept, email in dept_mappings.items():
     if email and dept in saved_files:
         send_email(email, f"Latecomers List - {dept} ({today_date})",
                    "Attached is the latecomers' list for today.", saved_files[dept])
+
+# Send consolidated report to ALL_MAIL
+send_email(ALL_MAIL, f"Latecomers Consolidated Report ({today_date})",
+           "Attached is the consolidated latecomers' report for all departments.", consolidated_filename)
