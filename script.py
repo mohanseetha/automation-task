@@ -6,9 +6,7 @@ import smtplib
 import os
 import json
 from email.message import EmailMessage
-from dotenv import load_dotenv
 
-load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT"))
