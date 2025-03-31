@@ -31,6 +31,10 @@ df['date'] = pd.to_datetime(df['date'])
 today_date = datetime.today().strftime('%d-%m-%Y')
 df_today = df[df['date'].dt.strftime('%d-%m-%Y') == today_date]
 
+if df_today.empty:
+    print(f"No latecomers found for {today_date}. Skipping further processing.")
+    exit()
+
 saved_files = {}
 with pd.ExcelWriter(f"Latecomers_{today_date}.xlsx", engine="xlsxwriter") as writer:
     for dept, email in dept_mappings.items():
